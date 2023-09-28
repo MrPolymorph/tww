@@ -3,26 +3,31 @@
 // Translation Unit: d_a_kytag00.cpp
 //
 #include "JSystem/JKernel/JKRHeap.h"
+#include "d/d_com_inf_game.h"
 #include "f_op/f_op_actor.h"
+#include "f_op/f_op_camera_mng.h"
 #include "d/d_kankyo.h"
 #include "d/d_procname.h"
-#include "mtx/vec.h"
+//#include "mtx/vec.h"
+#include "JSystem/JMath/JMath.h"
+#include "d/actor/d_a_player_link.h"
+
 #include "dolphin/types.h"
 
-class kytag00_class : fopAc_ac_c {
+class kytag00_class : public fopAc_ac_c {
 public:
-    /* 0x00 */ u8 unk1;
-    /* 0x01 */ u8 unk2;
-    /* 0x02 */ u8 unk3;
-    /* 0x03 */ u8 unk4;
+    /* 0x00 */ u8 unk0;
+    /* 0x01 */ u8 unk1;
+    /* 0x02 */ u8 unk2;
+    /* 0x03 */ u8 unk3;
     /* 0x04 */ u8 mbEfSet;
     /* 0x05 */ u8 bPselSet;
-    /* 0x06 */ u8 unk5;
+    /* 0x06 */ u8 unk4;
     /* 0x07 */ u8 mPselIdx;
     /* 0x08 */ u8 mEffectMode;
-    /* 0x09 */ u8 unk6;
-    /* 0x0A */ u8 unk7;
-    /* 0x0B */ u8 unk8;
+    /* 0x09 */ u8 unk5;
+    /* 0x0A */ u8 unk6;
+    /* 0x0B */ u8 unk7;
     /* 0x0C */ u32 mParamRadius;
     /* 0x10 */ int minnerFadeY;
     /* 0x14 */ f32 minnerRadius;
@@ -31,7 +36,7 @@ public:
     /* 0x24 */ u8 mSwitchID;
     /* 0x25 */ u8 mbInvert;
     /* 0x26 */ u8 mbAlwaysCheckPlayerPos;
-    /* 0x27 */ u8 unk9;
+    /* 0x27 */ u8 unk8;
 }; // Size: 0x27
 
 /* 00000078-0000024C       .text get_check_pos__FP13kytag00_class */
@@ -51,13 +56,13 @@ void get_check_pos(kytag00_class* i_this) {
     f64 temp_f0_5;
     f64 temp_f0_6;
     void *temp_r28;
-    daPy_py_c *mpPlayer;
-    camera_class *mpCamera;
+    daPy_py_c *mpPlayer;    //temp_r29
+    camera_class *mpCamera; //temp_r30
 
     //temp_r28 = M2C_ERROR(/* Read from unset register $r4 */);
-    temp_r29 = g_dComIfG_gameInfo.play.mpPlayer[0];
-    temp_r30 = g_dComIfG_gameInfo.play.mCameraInfo[0]->mpCamera;
-    temp_f1 = PSVECSquareDistance(i_this->current.pos, temp_r29 + 0xD8);
+    mpPlayer = g_dComIfG_gameInfo.play.mpPlayer[0];
+    mpCamera = g_dComIfG_gameInfo.play.mCameraInfo[0].mpCamera;
+    temp_f1 = PSVECSquareDistance(&i_this->current.pos, &mpPlayer->field_0x2d4);
     if (temp_f1 > @4129.unk0) {
         temp_f0 = __frsqrte(temp_f1);
         temp_f0_2 = @4129.unk8 * temp_f0 * (@4129.unk10 - ((f64) temp_f1 * (temp_f0 * temp_f0)));
@@ -67,7 +72,7 @@ void get_check_pos(kytag00_class* i_this) {
     } else {
         var_f31 = temp_f1;
     }
-    var_f1 = PSVECSquareDistance(temp_r28 + 0x1F8, temp_r30 + 0x1F8);
+    var_f1 = PSVECSquareDistance(&temp_r28->current + 0x1F8, mpCamera->mViewMtxNoTrans  temp_r30 + 0x1F8);
     if (var_f1 > @4129.unk0) {
         temp_f0_4 = __frsqrte(var_f1);
         temp_f0_5 = @4129.unk8 * temp_f0_4 * (@4129.unk10 - ((f64) var_f1 * (temp_f0_4 * temp_f0_4)));
@@ -90,9 +95,9 @@ void get_check_pos(kytag00_class* i_this) {
         sp14 = temp_r30->unk1FC;
         sp18 = temp_r30->unk200;
     }
-    arg0->unk0 = sp10;
-    arg0->unk4 = sp14;
-    arg0->unk8 = sp18;
+    i_this->unk0 = sp10;
+    i_this->unk4 = sp14;
+    i_this->unk8 = sp18;
 }
 
 /* 0000024C-000005E4       .text wether_tag_move__FP13kytag00_class */
