@@ -8,96 +8,80 @@
 #include "f_op/f_op_camera_mng.h"
 #include "d/d_kankyo.h"
 #include "d/d_procname.h"
-//#include "mtx/vec.h"
 #include "JSystem/JMath/JMath.h"
 #include "d/actor/d_a_player_link.h"
-
 #include "dolphin/types.h"
 
 class kytag00_class : public fopAc_ac_c {
 public:
-    /* 0x00 */ u8 unk0;
-    /* 0x01 */ u8 unk1;
-    /* 0x02 */ u8 unk2;
-    /* 0x03 */ u8 unk3;
-    /* 0x04 */ u8 mbEfSet;
-    /* 0x05 */ u8 bPselSet;
-    /* 0x06 */ u8 unk4;
-    /* 0x07 */ u8 mPselIdx;
-    /* 0x08 */ u8 mEffectMode;
-    /* 0x09 */ u8 unk5;
-    /* 0x0A */ u8 unk6;
-    /* 0x0B */ u8 unk7;
+    /* 0x00 */ u8 field_0x00;
+    /* 0x01 */ u8 field_0x01;
+    /* 0x02 */ u8 field_0x02;
+    /* 0x03 */ u8 mbEfSet;
+    /* 0x04 */ u8 mbPselSet;
+    /* 0x05 */ u8 field_0x05;
+    /* 0x06 */ u8 mPSelldx;
+    /* 0x07 */ u8 mEffectMode;
+    /* 0x08 */ u8 field_0x08;
+    /* 0x09 */ u8 field_0x09;
+    /* 0x0A */ u8 field_0x0A;
+    /* 0x0B */ u8 field_0x0B;
     /* 0x0C */ u32 mParamRadius;
-    /* 0x10 */ int minnerFadeY;
-    /* 0x14 */ f32 minnerRadius;
-    /* 0x1C */ f32 mOuterRadius;
-    /* 0x20 */ f32 mTarget;
-    /* 0x24 */ u8 mSwitchID;
-    /* 0x25 */ u8 mbInvert;
-    /* 0x26 */ u8 mbAlwaysCheckPlayerPos;
-    /* 0x27 */ u8 unk8;
+    /* 0x10 */ u32 mInnerFadeY;
+    /* 0x14 */ f32 mInnerRadius;
+    /* 0x18 */ f32 mOuterRadius;
+    /* 0x1C */ f32 mTarget;
+    /* 0x20 */ u8 mSwitchId;
+    /* 0x21 */ u8 mbInvert;
+    /* 0x22 */ u8 mbAlwaysCheckPlayerPos;
+    /* 0x23 */ cXyz* whoKnows;
 }; // Size: 0x27
 
 /* 00000078-0000024C       .text get_check_pos__FP13kytag00_class */
 void get_check_pos(kytag00_class* i_this) {
-    f32 sp18;
-    f32 sp14;
-    f32 sp10;
-    f32 spC;
-    f32 sp8;
-    f32 temp_f1;
-    f32 var_f1;
-    f32 var_f31;
-    f64 temp_f0;
-    f64 temp_f0_2;
-    f64 temp_f0_3;
-    f64 temp_f0_4;
-    f64 temp_f0_5;
-    f64 temp_f0_6;
-    void *temp_r28;
-    daPy_py_c *mpPlayer;    //temp_r29
-    camera_class *mpCamera; //temp_r30
+    double fVar1;
+    double fVar2;
+    double fVar3;
+    daPy_py_c *mpPlayer;
+    camera_class *mpCamera;
+    cXyz *local_40;
 
-    //temp_r28 = M2C_ERROR(/* Read from unset register $r4 */);
-    mpPlayer = g_dComIfG_gameInfo.play.mpPlayer[0];
     mpCamera = g_dComIfG_gameInfo.play.mCameraInfo[0].mpCamera;
-    temp_f1 = PSVECSquareDistance(&i_this->current.pos, &mpPlayer->field_0x2d4);
-    if (temp_f1 > @4129.unk0) {
-        temp_f0 = __frsqrte(temp_f1);
-        temp_f0_2 = @4129.unk8 * temp_f0 * (@4129.unk10 - ((f64) temp_f1 * (temp_f0 * temp_f0)));
-        temp_f0_3 = @4129.unk8 * temp_f0_2 * (@4129.unk10 - ((f64) temp_f1 * (temp_f0_2 * temp_f0_2)));
-        spC = (f32) ((f64) temp_f1 * (@4129.unk8 * temp_f0_3 * (@4129.unk10 - ((f64) temp_f1 * (temp_f0_3 * temp_f0_3)))));
-        var_f31 = spC;
-    } else {
-        var_f31 = temp_f1;
+    mpPlayer = g_dComIfG_gameInfo.play.mpPlayer[0];
+
+    fVar2 = PSVECSquareDistance(&i_this->current.pos, &mpCamera->mLookat.mEye);
+
+    if (fVar1 > 0.0) {
+        fVar3 = __frsqrte(fVar2) / 1.0;
+        fVar3 *= 0.5 * (3.0 - fVar2 * fVar3 * fVar3);
+        fVar3 *= 0.5 * (3.0 - fVar2 * fVar3 * fVar3);
+        fVar2 *= fVar3 * 0.5 * (3.0 - fVar2 * fVar3 * fVar3);
     }
-    var_f1 = PSVECSquareDistance(&temp_r28->current + 0x1F8, mpCamera->mViewMtxNoTrans  temp_r30 + 0x1F8);
-    if (var_f1 > @4129.unk0) {
-        temp_f0_4 = __frsqrte(var_f1);
-        temp_f0_5 = @4129.unk8 * temp_f0_4 * (@4129.unk10 - ((f64) var_f1 * (temp_f0_4 * temp_f0_4)));
-        temp_f0_6 = @4129.unk8 * temp_f0_5 * (@4129.unk10 - ((f64) var_f1 * (temp_f0_5 * temp_f0_5)));
-        sp8 = (f32) ((f64) var_f1 * (@4129.unk8 * temp_f0_6 * (@4129.unk10 - ((f64) var_f1 * (temp_f0_6 * temp_f0_6)))));
-        var_f1 = sp8;
+    fVar3 = PSVECSquareDistance(&i_this->current.pos, &mpPlayer->current.pos);
+    if (fVar3 > 0.0) {
+        fVar1 = fVar1 * 0.5 * (3.0 - fVar3 * fVar1 * fVar1);
+        fVar1 = fVar1 * 0.5 * (3.0 - fVar3 * fVar1 * fVar1);
+        fVar3 = fVar3 * fVar1 * 0.5 * (3.0 - fVar3 * fVar1 * fVar1);
     }
-    if (((u8) g_dComIfG_gameInfo.unk529A != 0) && ((u8) temp_r28->unk2B2 == 0)) {
-        if (var_f31 < var_f1) {
-            sp10 = temp_r29->unkD8;
-            sp14 = temp_r29->unkDC;
-            sp18 = temp_r29->unkE0;
-        } else {
-            sp10 = temp_r30->unk1F8;
-            sp14 = temp_r30->unk1FC;
-            sp18 = temp_r30->unk200;
-        }
-    } else {
-        sp10 = temp_r30->unk1F8;
-        sp14 = temp_r30->unk1FC;
-        sp18 = temp_r30->unk200;
+    if ((g_dComIfG_gameInfo.play.mEvtCtrl.mMode == 0) ||
+        (i_this->mbAlwaysCheckPlayerPos == 0)) {
+        local_40->x = mpPlayer->current.pos.x;
+        local_40->y = mpPlayer->current.pos.y;
+        local_40->z = mpPlayer->current.pos.z;
     }
-    i_this->unk0 = sp10;
-    i_this->unk4 = sp14;
-    i_this->unk8 = sp18;
+    else if (fVar3 <= fVar2) {
+        local_40->x = mpPlayer->current.pos.x;
+        local_40->y = mpPlayer->current.pos.y;
+        local_40->z = mpPlayer->current.pos.z;
+    }
+    else {
+        local_40->x = mpCamera->mLookat.mEye.x;
+        local_40->y = mpCamera->mLookat.mEye.y;
+        local_40->z = mpCamera->mLookat.mEye.z;
+    }
+    i_this->whoKnows->x = local_40->x;
+    i_this->whoKnows->y = local_40->y;
+    i_this->whoKnows->z = local_40->z;
 }
 
 /* 0000024C-000005E4       .text wether_tag_move__FP13kytag00_class */
@@ -108,18 +92,19 @@ BOOL wether_tag_move(kytag00_class*) {
 
 /* 000005E4-000006A0       .text raincnt_set__Ff */
 void raincnt_set(float flt) {
-    s32 var_r31 = 0;
+    s32 rainCount = 0;
+    s32 temp;
 
     if (dKy_checkEventNightStop() != 0) {
-        s32 temp_r3 = (250.0f * (flt * (flt * flt)));
-        if (g_env_light.mRainCount < temp_r3) {
-            var_r31 = g_env_light.mRainCount;
+        temp = (250.0f * (flt * (flt * flt)));
+        if (g_env_light.mRainCount < temp) {
+            rainCount = g_env_light.mRainCount;
         }
     } else {
-        var_r31 = (250.0f * (flt * (flt * flt)));
+        rainCount = (250.0f * (flt * (flt * flt)));
     }
-    if (var_r31 > g_env_light.mRainCountOrig) {
-        g_env_light.mRainCount = var_r31;
+    if (rainCount > g_env_light.mRainCountOrig) {
+        g_env_light.mRainCount = rainCount;
     }
 }
 
@@ -160,9 +145,60 @@ BOOL daKytag00_Delete(kytag00_class*) {
 }
 
 /* 00000D64-00000F8C       .text daKytag00_Create__FP10fopAc_ac_c */
-BOOL daKytag00_Create(fopAc_ac_c*) {
-    /* Nonmatching */
-    return 1;
+int daKytag00_Create(fopAc_ac_c* i_this) {
+    bool bVar1;
+    fopAcM_SetupActor(i_this, kytag00_class);
+    kytag00_class* tag = (kytag00_class*)i_this;
+
+    tag->mPSelldx = 0;
+    tag->mPSelldx = tag->mBase.mParameters;
+    tag->mEffectMode = tag->mBase.mParameters >> 8;
+    tag->mParamRadius = tag->mBase.mParameters >> 0x10 & 0xff;
+    tag->mInnerFadeY = tag->mBase.mParameters >> 0x18;
+    tag->mSwitchId = tag->current.rot.x;
+    tag->mbInvert = tag->current.rot.x >> 8);
+    tag->mbAlwaysCheckPlayerPos = tag->mCurrent.mRot.z;
+    if (param_1->mbInvert == 0) {
+        if ((param_1->mSwitchID == 0xff) ||
+            (bVar1 = dSv_info_c::isSwitch
+             (&d_com_inf_game::g_dComIfG_gameInfo.info,(uint)param_1->mSwitchID,
+              (int)(char)dStage_roomControl_c::mStayNo), !bVar1)) {
+            param_1->mTarget = 1.0;
+        }
+        else {
+            param_1->mTarget = 0.0;
+        }
+    }
+    else if ((param_1->mSwitchID == 0xff) ||
+             (bVar1 = dSv_info_c::isSwitch
+              (&d_com_inf_game::g_dComIfG_gameInfo.info,(uint)param_1->mSwitchID,
+               (int)(char)dStage_roomControl_c::mStayNo), !bVar1)) {
+        param_1->mTarget = 0.0;
+    }
+    else {
+        param_1->mTarget = 1.0;
+    }
+    if (param_1->mParamRadius == 0xff) {
+        param_1->mParamRadius = 10;
+    }
+    if (param_1->mInnerFadeY == 0xff) {
+        param_1->mInnerFadeY = 10;
+    }
+    if (param_1->mbAlwaysCheckPlayerPos == 0) {
+        param_1->mInnerRadius = (param_1->parent).mScale.x * 5000.0;
+        param_1->mOuterRadius =
+            (param_1->parent).mScale.x * 5000.0 + (float)(int)param_1->mParamRadius * 100.0;
+    }
+    else {
+        param_1->mInnerRadius = (param_1->parent).mScale.x * 500.0;
+        param_1->mOuterRadius =
+            (param_1->parent).mScale.x * 500.0 + (float)(int)param_1->mParamRadius * 10.0;
+    }
+    param_1->mbEfSet = 0;
+    param_1->mbPselSet = 0;
+    d_kankyo::g_env_light.mMoyaCount = 0;
+    wether_tag_efect_move(param_1);
+    return 4;
 }
 
 static actor_method_class l_kytag00__Method = {
