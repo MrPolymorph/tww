@@ -215,6 +215,7 @@ int daKytag00_Create(fopAc_ac_c* i_this) {
     return 4;
 }
 
+
 static actor_method_class l_kytag00__Method = {
     (process_method_func)daKytag00_Execute,
     (process_method_func)daKytag00_Draw,
@@ -222,6 +223,7 @@ static actor_method_class l_kytag00__Method = {
     (process_method_func)daKytag00_Delete,
     (process_method_func)daKytag00_Create
 };
+
 
 extern actor_process_profile_definition g_profile_KYTAG00 = {
     fpcLy_CURRENT_e,
@@ -239,3 +241,5 @@ extern actor_process_profile_definition g_profile_KYTAG00 = {
     fopAc_ACTOR_e,
     fopAc_CULLBOX_0_e,
 };
+
+
