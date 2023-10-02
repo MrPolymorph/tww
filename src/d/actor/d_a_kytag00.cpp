@@ -178,16 +178,15 @@ int daKytag00_Create(fopAc_ac_c* i_this) {
     tag->mbInvert = tag->current.angle.x >> 8 & 0xFF;
     tag->mbAlwaysCheckPlayerPos = tag->current.angle.z;
 
-
     if (tag->mbInvert == 0) {
-        if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo) != 0) {
+        if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(tag->mSwitchId, dComIfGp_roomControl_getStayNo())) {
             tag->mTarget = 0.0f;
         }
         else {
             tag->mTarget = 1.0f;
         }
     }
-    else if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo) != 0) {
+    else if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(tag->mSwitchId, dComIfGp_roomControl_getStayNo())) {
         tag->mTarget = 1.0f;
     }
     else {
