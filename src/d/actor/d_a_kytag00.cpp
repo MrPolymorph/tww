@@ -17,12 +17,12 @@ public:
     /* 0x00 */ u8 field_0x00;
     /* 0x01 */ u8 field_0x01;
     /* 0x02 */ u8 field_0x02;
-    /* 0x03 */ u8 mbEfSet;
-    /* 0x04 */ u8 mbPselSet;
-    /* 0x05 */ u8 field_0x05;
-    /* 0x06 */ u8 mPSelldx;
-    /* 0x07 */ u8 mEffectMode;
-    /* 0x08 */ u8 field_0x08;
+    /* 0x03 */ u8 field_0x03;
+    /* 0x04 */ u8 mbEfSet;
+    /* 0x05 */ u8 mbPselSet;
+    /* 0x06 */ u8 field_0x06;
+    /* 0x07 */ u8 mPSelldx;
+    /* 0x08 */ u8 mEffectMode;
     /* 0x09 */ u8 field_0x09;
     /* 0x0A */ u8 field_0x0A;
     /* 0x0B */ u8 field_0x0B;
@@ -39,6 +39,7 @@ public:
 
 /* 00000078-0000024C       .text get_check_pos__FP13kytag00_class */
 void get_check_pos(kytag00_class* i_this) {
+    /* Nonmatching */
     double fVar1;
     double fVar2;
     double fVar3;
@@ -92,6 +93,7 @@ BOOL wether_tag_move(kytag00_class*) {
 
 /* 000005E4-000006A0       .text raincnt_set__Ff */
 void raincnt_set(float flt) {
+    /* Nonmatching */
     s32 rainCount = 0;
     s32 temp;
 
@@ -128,9 +130,25 @@ BOOL daKytag00_Draw(kytag00_class* i_this) {
 }
 
 /* 00000C30-00000D44       .text daKytag00_Execute__FP13kytag00_class */
-BOOL daKytag00_Execute(kytag00_class*) {
-    /* Nonmatching */
-    return 1;
+BOOL daKytag00_Execute(kytag00_class* i_this) {
+  bool bVar1;
+  
+  if (i_this->mbInvert == 0) {
+    if (i_this->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo)) {
+      cLib_addCalc(&i_this->mTarget, 1.0f, 0.1f, 0.01f, 0.0001);
+    }
+    else {
+      cLib_addCalc(&i_this->mTarget, 0.0f, 0.1f, 0.01f, 0.0001);
+    }
+  }
+  else if ((i_this->mSwitchId == 0xff) || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo)) {
+    cLib_addCalc(&i_this->mTarget, 0.0f, 0.1f, 0.01f, 0.0001);
+  }
+  else {
+    cLib_addCalc(&i_this->mTarget, 1.0f, 0.1f, 0.01f, 0.0001);
+  }
+  wether_tag_move(i_this);
+  return 1;
 }
 
 /* 00000D44-00000D4C       .text daKytag00_IsDelete__FP13kytag00_class */
@@ -146,58 +164,54 @@ BOOL daKytag00_Delete(kytag00_class*) {
 
 /* 00000D64-00000F8C       .text daKytag00_Create__FP10fopAc_ac_c */
 int daKytag00_Create(fopAc_ac_c* i_this) {
+    /* Nonmatching */
     bool bVar1;
     fopAcM_SetupActor(i_this, kytag00_class);
     kytag00_class* tag = (kytag00_class*)i_this;
 
-    tag->mPSelldx = 0;
+    tag->field_0x06 = 0;
     tag->mPSelldx = tag->mBase.mParameters;
     tag->mEffectMode = tag->mBase.mParameters >> 8;
-    tag->mParamRadius = tag->mBase.mParameters >> 0x10 & 0xff;
+    tag->mParamRadius = tag->mBase.mParameters >> 0x10 & 0xFF;
     tag->mInnerFadeY = tag->mBase.mParameters >> 0x18;
-    tag->mSwitchId = tag->current.rot.x;
-    tag->mbInvert = tag->current.rot.x >> 8);
-    tag->mbAlwaysCheckPlayerPos = tag->mCurrent.mRot.z;
-    if (param_1->mbInvert == 0) {
-        if ((param_1->mSwitchID == 0xff) ||
-            (bVar1 = dSv_info_c::isSwitch
-             (&d_com_inf_game::g_dComIfG_gameInfo.info,(uint)param_1->mSwitchID,
-              (int)(char)dStage_roomControl_c::mStayNo), !bVar1)) {
-            param_1->mTarget = 1.0;
+    tag->mSwitchId = tag->current.angle.x;
+    tag->mbInvert = tag->current.angle.x >> 8 & 0xFF;
+    tag->mbAlwaysCheckPlayerPos = tag->current.angle.z;
+
+
+    if (tag->mbInvert == 0) {
+        if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo) != 0) {
+            tag->mTarget = 0.0f;
         }
         else {
-            param_1->mTarget = 0.0;
+            tag->mTarget = 1.0f;
         }
     }
-    else if ((param_1->mSwitchID == 0xff) ||
-             (bVar1 = dSv_info_c::isSwitch
-              (&d_com_inf_game::g_dComIfG_gameInfo.info,(uint)param_1->mSwitchID,
-               (int)(char)dStage_roomControl_c::mStayNo), !bVar1)) {
-        param_1->mTarget = 0.0;
+    else if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo) != 0) {
+        tag->mTarget = 1.0f;
     }
     else {
-        param_1->mTarget = 1.0;
+        tag->mTarget = 1.0f;
     }
-    if (param_1->mParamRadius == 0xff) {
-        param_1->mParamRadius = 10;
+    if ((int)tag->mParamRadius == 0xff) {
+        tag->mParamRadius = 10;
     }
-    if (param_1->mInnerFadeY == 0xff) {
-        param_1->mInnerFadeY = 10;
+    if ((int)tag->mInnerFadeY == 0xff) {
+        tag->mInnerFadeY = 10;
     }
-    if (param_1->mbAlwaysCheckPlayerPos == 0) {
-        param_1->mInnerRadius = (param_1->parent).mScale.x * 5000.0;
-        param_1->mOuterRadius =
-            (param_1->parent).mScale.x * 5000.0 + (float)(int)param_1->mParamRadius * 100.0;
+    if (tag->mbAlwaysCheckPlayerPos == 0) {
+        tag->mInnerRadius = tag->mScale.x * 5000.0f;
+        tag->mOuterRadius =
+            tag->mScale.x * 5000.0f + (float)(int)tag->mParamRadius * 100.0f;
     }
     else {
-        param_1->mInnerRadius = (param_1->parent).mScale.x * 500.0;
-        param_1->mOuterRadius =
-            (param_1->parent).mScale.x * 500.0 + (float)(int)param_1->mParamRadius * 10.0;
+        tag->mInnerRadius = tag->mScale.x * 500.0f;
+        tag->mOuterRadius = tag->mScale.x * 500.0f + (float)(int)tag->mParamRadius * 30.0f;
     }
-    param_1->mbEfSet = 0;
-    param_1->mbPselSet = 0;
-    d_kankyo::g_env_light.mMoyaCount = 0;
-    wether_tag_efect_move(param_1);
+    tag->mbEfSet = 0;
+    tag->mbPselSet = 0;
+    g_env_light.mMoyaCount = 0;
+    wether_tag_efect_move(tag);
     return 4;
 }
 
