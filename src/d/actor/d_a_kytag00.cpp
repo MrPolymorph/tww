@@ -131,24 +131,22 @@ BOOL daKytag00_Draw(kytag00_class* i_this) {
 
 /* 00000C30-00000D44       .text daKytag00_Execute__FP13kytag00_class */
 BOOL daKytag00_Execute(kytag00_class* i_this) {
-  bool bVar1;
-  
-  if (i_this->mbInvert == 0) {
-    if (i_this->mSwitchId == 0xff || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo)) {
-      cLib_addCalc(&i_this->mTarget, 1.0f, 0.1f, 0.01f, 0.0001);
+    if (i_this->mbInvert == 0) {
+        if (i_this->mSwitchId == 0xff || dComIfGs_isSwitch(i_this->mSwitchId, dComIfGp_roomControl_getStayNo())) {
+          cLib_addCalc(&i_this->mTarget,1.0f,0.1f,0.003f,0.0000001f);
+        }
+        else {
+          cLib_addCalc(&i_this->mTarget, 0.0f, 0.08f, 0.002f, 0.00000001f);
+        }
+    }
+    else if ((i_this->mSwitchId == 0xff) || dComIfGs_isSwitch(i_this->mSwitchId, dComIfGp_roomControl_getStayNo())) {
+        cLib_addCalc(&i_this->mTarget, 0.0f, 0.08f, 0.0002f, 0.00000001f);
     }
     else {
-      cLib_addCalc(&i_this->mTarget, 0.0f, 0.1f, 0.01f, 0.0001);
+        cLib_addCalc(&i_this->mTarget, 0.0f, 0.08f, 0.0002f, 0.00000001f);
     }
-  }
-  else if ((i_this->mSwitchId == 0xff) || dComIfGs_isSwitch(dStage_roomControl_c::mStayNo, dStage_roomControl_c::mStayNo)) {
-    cLib_addCalc(&i_this->mTarget, 0.0f, 0.1f, 0.01f, 0.0001);
-  }
-  else {
-    cLib_addCalc(&i_this->mTarget, 1.0f, 0.1f, 0.01f, 0.0001);
-  }
-  wether_tag_move(i_this);
-  return 1;
+    wether_tag_move(i_this);
+    return 1;
 }
 
 /* 00000D44-00000D4C       .text daKytag00_IsDelete__FP13kytag00_class */
@@ -180,7 +178,7 @@ int daKytag00_Create(fopAc_ac_c* i_this) {
 
     if (tag->mbInvert == 0) {
         if (tag->mSwitchId == 0xff || dComIfGs_isSwitch(tag->mSwitchId, dComIfGp_roomControl_getStayNo())) {
-            tag->mTarget = 0.0f;
+            tag->mTarget = -100.0f;
         }
         else {
             tag->mTarget = 1.0f;
