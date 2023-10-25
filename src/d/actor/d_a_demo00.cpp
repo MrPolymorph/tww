@@ -23,7 +23,9 @@ public:
     void execute();
 public:
     /* 0x290 */ dDemo_actor_c* field_0x290;
-    /* 0x294 */ u32 field_0x294[0x17];
+    /* 0x294 */ u32 field_0x294;
+    /* 0x295 */ void (daDemo00_c::* PTR_actStandby_8038b05c)(dDemo_actor_c*);
+    /* 0x296 */ u32 field_0x296[0x13];
     /* 0x2f0 */ mDoExt_McaMorf* field_0x2f0;
     /* 0x2f4 */ Mtx* mMtx;
 };
@@ -95,25 +97,28 @@ void daDemo00_c::setShadowSize() {
 /* 800E5DEC-800E5FF4       .text awaCheck__FP8J3DModel */
 int awaCheck(J3DModel* j3DModel) {
     /* Nonmatching */
-    u32 uVar1;
+    u32 idx;
     ResTIMG * frameBufferTiming;
-    const char * nameTableName;
-    int iVar3;
+    const char* nameTableName;
+    const char* puVar2;
+    bool success;
     J3DSkinDeform *skinDeform;
-    const ResNTAB * resNtab;
+    ResTIMG restImg;
+    const ResTIMG* frameBufferTimer;
     u16 index;
-    JUTNameTab * nameTable;
+    JUTNameTab * textureName;
     JUTNameTab * materialName;
     J3DModelData * modelData;
 
     modelData = j3DModel->mModelData;
-    materialName = (modelData->getMaterialTable()).getMaterialName();
-    if ((materialName != (JUTNameTab *)0x0) &&
-        (nameTable = modelData->getMaterialName(), nameTable != NULL)) {
-        for (index = 0; index < *(u16 *)&materialName->vtbl; index++) {
-            nameTableName = nameTable->getName(index);
-            iVar3 = strcmp(nameTableName,"B_dummy");
-            if ((iVar3 == 0) || (iVar3 = strcmp(nameTableName,"cy_kankyo"), iVar3 == 0)) {
+    materialName = modelData->getMaterialTable().getMaterialName();
+    textureName = modelData->getMaterialTable().getTextureName();
+
+    if (materialName != NULL && textureName != NULL) {
+        for (index = 0; index < materialName->getResNameTable()->mEntryNum; index++) {
+            nameTableName = textureName->getName(index);
+            success = strcmp(nameTableName,"B_dummy");
+            if ((success == 0) || (success = strcmp(nameTableName,"cy_kankyo"), success == 0)) {
                 skinDeform = new J3DSkinDeform();
                 if (skinDeform != NULL) {
                     j3DModel->setSkinDeform(skinDeform, 1);
@@ -121,42 +126,42 @@ int awaCheck(J3DModel* j3DModel) {
                 if (skinDeform == NULL) {
                     return 0;
                 }
-                iVar3 = j3DModel->setSkinDeform(skinDeform, 1);
-                if (iVar3 != 0) {
+                success = j3DModel->setSkinDeform(skinDeform, 1);
+                if (success != 0) {
                     return 0;
                 }
-                iVar3 = strcmp(nameTableName,"B_dummy");
-                frameBufferTiming = mDoGph_gInf_c::mFrameBufferTimg;
-                if (iVar3 == 0) {
-                    uVar1 = index;
-                    resNtab = materialName->getResNameTable();
-                    *(GXTexFmt *)&resNtab->mCount = mDoGph_gInf_c::mFrameBufferTimg->format;
-                    *(byte *)((int)&resNtab->mCount + 1) = frameBufferTiming->mTranslucency;
-                    resNtab->field1_0x2 = frameBufferTiming->mWidth;
-                    resNtab->mEntries[0] = frameBufferTiming->mHeight;
-                    *(GXTexWrapMode *)(resNtab->mEntries + 1) = frameBufferTiming->mWrapS;
-                    *(GXTexWrapMode *)((int)resNtab->mEntries + 3) = frameBufferTiming->mWrapT;
-                    *(byte *)&resNtab[1].mCount = frameBufferTiming->mbHasTlut;
-                    *(GXTlutFmt *)((int)&resNtab[1].mCount + 1) = frameBufferTiming->mTlutFmt;
-                    resNtab[1].field1_0x2 = frameBufferTiming->mTlutCount;
-                    *(int *)resNtab[1].mEntries = frameBufferTiming->mTlutDataOffs;
-                    *(byte *)&resNtab[2].mCount = frameBufferTiming->mbMipmapEnabled;
-                    *(byte *)((int)&resNtab[2].mCount + 1) = frameBufferTiming->mbDoEdgeLOD;
-                    *(byte *)&resNtab[2].field1_0x2 = frameBufferTiming->mbBiasClamp;
-                    *(byte *)((int)&resNtab[2].field1_0x2 + 1) = frameBufferTiming->mMaxAniso;
-                    *(GXTexFilter *)resNtab[2].mEntries = frameBufferTiming->mMinFilter;
-                    *(GXTexFilter *)((int)resNtab[2].mEntries + 1) = frameBufferTiming->mMagFilter;
-                    *(byte *)(resNtab[2].mEntries + 1) = frameBufferTiming->mMinLOD;
-                    *(byte *)((int)resNtab[2].mEntries + 3) = frameBufferTiming->mMaxLOD;
-                    *(byte *)&resNtab[3].mCount = frameBufferTiming->mMipmapCount;
-                    *(byte *)((int)&resNtab[3].mCount + 1) = frameBufferTiming->field19_0x19;
-                    resNtab[3].field1_0x2 = frameBufferTiming->mLODBias;
-                    *(int *)resNtab[3].mEntries = frameBufferTiming->mTexDataOffs;
-                    resNtab = materialName->mpRes + uVar1 * 4;
-                    *(int *)resNtab[3].mEntries = (int)frameBufferTiming + (*(int *)resNtab[3].mEntries - (int)resNtab);
-                    resNtab = materialName->mpRes + uVar1 * 4;
-                    *(int *)resNtab[1].mEntries = (int)frameBufferTiming + (*(int *)resNtab[1].mEntries - (int)resNtab);
-                    mDoExt_modelTexturePatch(modelData);
+                success = strcmp(nameTableName,"B_dummy");
+                frameBufferTimer = mDoGph_gInf_c::mFrameBufferTimg;
+                if (success == 0) {
+                    restImg.format = frameBufferTimer->format;
+                    restImg.alphaEnabled = frameBufferTimer->alphaEnabled;
+                    restImg.width = frameBufferTimer->width;
+                    restImg.height = frameBufferTimer->height;
+                    restImg.wrapS = frameBufferTimer->wrapS;
+                    restImg.wrapT = frameBufferTimer->wrapT;
+                    restImg.indexTexture = frameBufferTimer->indexTexture;
+                    restImg.colorFormat = frameBufferTimer->colorFormat;
+                    restImg.numColors = frameBufferTimer->numColors;
+                    restImg.paletteOffset = frameBufferTimer->paletteOffset;
+                    restImg.mipmapEnabled = frameBufferTimer->mipmapEnabled;
+                    restImg.doEdgeLOD = frameBufferTimer->doEdgeLOD;
+                    restImg.biasClamp = frameBufferTimer->biasClamp;
+                    restImg.maxAnisotropy = frameBufferTimer->maxAnisotropy;
+                    restImg.minFilter = frameBufferTimer->minFilter;
+                    restImg.magFilter = frameBufferTimer->magFilter;
+                    restImg.minLOD = frameBufferTimer->minLOD;
+                    restImg.maxLOD = frameBufferTimer->maxLOD;
+                    restImg.mipmapCount = frameBufferTimer->mipmapCount;
+                    restImg.unknown = frameBufferTimer->unknown;
+                    restImg.LODBias = frameBufferTimer->LODBias;
+                    restImg.imageOffset = frameBufferTimer->imageOffset;
+//                    pRVar3 = textureNameTable->mpRes + uVar1 * 4;
+//                    *(int *)pRVar3[3].mEntries =
+//                        (int)frameBufferTimer + (*(int *)pRVar3[3].mEntries - (int)pRVar3);
+//                    pRVar3 = textureNameTable->mpRes + uVar1 * 4;
+//                    *(int *)pRVar3[1].mEntries =
+//                        (int)frameBufferTimer + (*(int *)pRVar3[1].mEntries - (int)pRVar3);
+//                    m_Do_ext::mDoExt_modelTexturePatch(modelData);
                 }
             }
         }
@@ -198,9 +203,9 @@ int daDemo00_c::actLeaving(dDemo_actor_c* a_this) {
     fopAcM_DeleteHeap(this);
     uVar1 = 0xFFFFFFFF;
     field_0x290 = 0;
-    //*(undefined4 *)(this + 0x290) = d_a_demo00::@4760;
-    field_0x294[1] = uVar1;
-    //*(undefined **)(this + 0x298) = PTR_actStandby_8038b05c;
+    field_0x290 = 0;
+    field_0x294 = uVar1;
+    PTR_actStandby_8038b05c = &actStandby;
     return 1;
 }
 
