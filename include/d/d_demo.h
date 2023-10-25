@@ -1,6 +1,9 @@
 #ifndef D_DEMO_H
-#define D_DEMO_H
+#define D_DEMO_HdDemo_actor_c
 
+#include "SSystem/SComponent/c_sxyz.h"
+#include "SSystem/SComponent/c_xyz.h"
+#include "m_Do/m_Do_ext.h"
 #include "dolphin/types.h"
 
 class dDemo_actor_c;

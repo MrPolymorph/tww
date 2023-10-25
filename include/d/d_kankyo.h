@@ -421,5 +421,6 @@ void dKy_set_vrboxkumocol_ratio(f32 ratio);
 cXyz dKy_get_orion_pos();
 cXyz dKy_get_hokuto_pos();
 void dKy_DayProc();
+void dKydm_demo_plight_delete(DEMO_PLIGHT* i_plight);
 
 #endif /* D_KANKYO_D_KANKYO_H */
