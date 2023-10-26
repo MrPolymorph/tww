@@ -3,12 +3,75 @@
 // Translation Unit: d_a_lod_bg.cpp
 //
 
-#include "d_a_lod_bg.h"
-#include "dolphin/types.h"
+#include "JSystem/JKernel/JKRHeap.h"
+#include "f_op/f_op_actor_mng.h"
+#include "JSystem/JKernel/JKRExpHeap.h"
+#include "JSystem/JUtility/JUTAssert.h"
+
+class daLodbg_c : public fopAc_ac_c {
+public:
+    inline int create();
+    void deleteModelData();
+    void loadModelData(const char*, J3DModelData*&, JKRSolidHeap*&, unsigned long&);
+    void createModelData();
+    void createHeap();
+    void execCreateWait();
+    void execReadWait();
+    void execDeleteWait();
+    void draw();
+    daLodbg_c();
+    ~daLodbg_c();
+public:
+    int _sObjectCount;
+    JKRExpHeap _sLocalHeap;
+};
+
+int daLodbg_c::create() {
+    fopAcM_SetupActor(this, daLodbg_c);
+    return 4;
+}
 
 /* 00000078-00000204       .text __ct__9daLodbg_cFv */
 daLodbg_c::daLodbg_c() {
     /* Nonmatching */
+    int iVar1;
+    u32 uVar2;
+    JKRHeap *pJVar3;
+
+    fopAc_ac_c::fopAc_ac_c(&this->parent);
+    if (_sObjectCount == 0) {
+        JUT_ASSERT(0x5e, _sLocalHeap);
+        pJVar3 = mDoExt_getArchiveHeap();
+        _sLocalHeap = JKRExpHeap::create(0x20000,pJVar3,false);
+        if (_sLocalHeap == (JKRExpHeap *)0x0) {
+            uVar2 = JUTAssertion::getSDevice();
+            JUTAssertion::showAssert(uVar2,"d_a_lod_bg.cpp",0x60,"sLocalHeap != 0");
+            m_Do_printf::OSPanic("d_a_lod_bg.cpp",0x60,&DAT_8043423f);
+        }
+    }
+    _sObjectCount = _sObjectCount + 1;
+    (this->mExecFunc).this_delta = 0;
+    (this->mExecFunc).vtbl_offset = 0;
+    (this->mExecFunc).func = (undefined *)0x0;
+    this->mpModel = (J3DModel *)0x0;
+    this->mpModel2[0] = (J3DModel *)0x0;
+    this->mpModel2[1] = (J3DModel *)0x0;
+    this->mAlpha = 0;
+    this->mDrawModel2 = 0;
+    this->mpMountCommand = (mDoDvdThd_mountXArchive_c *)0x0;
+    this->mpArchive = (JKRArchive *)0x0;
+    this->field12_0x2bc = 0;
+    this->field13_0x2c0 = 0;
+    this->mpHeap = (JKRSolidHeap *)0x0;
+    this->mpHeap2 = (JKRSolidHeap *)0x0;
+    iVar1 = DAT_804343f4;
+    (this->mExecFunc).this_delta = DAT_804343f0;
+    (this->mExecFunc).vtbl_offset = iVar1;
+    (this->mExecFunc).func = PTR_execCreateWait_804343f8;
+    mScale.x = mScale.x * 20000.0;
+    mScale.z = mScale.x + 20000.0;
+    dKy_tevstr_init(&mTevStr, orig.roomNo, 0xFF);
+    return;
 }
 
 /* 00000204-0000031C       .text __dt__9daLodbg_cFv */
@@ -37,8 +100,9 @@ void daLodbg_c::createHeap() {
 }
 
 /* 00000A38-00000A58       .text createHeapCallBack__FP10fopAc_ac_c */
-void createHeapCallBack(fopAc_ac_c*) {
-    /* Nonmatching */
+static void createHeapCallBack(fopAc_ac_c* i_this) {
+    daLodbg_c* a_this = (daLodbg_c*)i_this;
+    a_this->createHeap();
 }
 
 /* 00000A58-00000B4C       .text execCreateWait__9daLodbg_cFv */
@@ -62,27 +126,33 @@ void daLodbg_c::draw() {
 }
 
 /* 00001274-00001294       .text daLodbg_Draw__FP9daLodbg_c */
-void daLodbg_Draw(daLodbg_c*) {
+static void daLodbg_Draw(daLodbg_c* a_this) {
     /* Nonmatching */
+    a_this->draw();
 }
 
 /* 00001294-000012BC       .text daLodbg_Execute__FP9daLodbg_c */
-void daLodbg_Execute(daLodbg_c*) {
+static void daLodbg_Execute(daLodbg_c*) {
     /* Nonmatching */
+    //Runtime.PPCEABI.H::__ptmf_scall();
+    return;
 }
 
 /* 000012BC-000012C4       .text daLodbg_IsDelete__FP9daLodbg_c */
-void daLodbg_IsDelete(daLodbg_c*) {
-    /* Nonmatching */
+static BOOL daLodbg_IsDelete(daLodbg_c*) {
+    return true;
 }
 
 /* 000012C4-000012EC       .text daLodbg_Delete__FP9daLodbg_c */
-void daLodbg_Delete(daLodbg_c*) {
+static int daLodbg_Delete(daLodbg_c* a_this) {
     /* Nonmatching */
+    a_this->~daLodbg_c();
+    return true;
 }
 
 /* 000012EC-0000133C       .text daLodbg_Create__FP10fopAc_ac_c */
-void daLodbg_Create(fopAc_ac_c*) {
-    /* Nonmatching */
+static int daLodbg_Create(fopAc_ac_c* i_this) {
+    daLodbg_c* a_this = (daLodbg_c*)i_this;
+    return a_this->create();
 }
 
