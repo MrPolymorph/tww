@@ -4,8 +4,6 @@
  */
 
 #include "d/actor/d_a_obj_rcloud.h"
-
-
 #include "d/d_com_inf_game.h"
 #include "d/d_procname.h"
 #include "d/d_priority.h"
@@ -14,13 +12,16 @@ namespace {
     const char l_arcname[] = "BVkumo";
     const char l_demo41_name[] = "demo41";
     const char l_dummy_name[] = "demo41";
+    const char* l_demo_name[] = {l_demo41_name, l_dummy_name};
+}
+
+namespace {
     const f32 i_rate = 1.0f;
     const f32 m4130 = 428.0f;
     const int m4132 = 4503599627370496;
     const f32 m4141 = -0.008928572;
     const f32 i_end = -1.0f;
 }
-
 
 /* 00000078-000000E8       .text init_mtx__13daObjRcloud_cFv */
 void daObjRcloud_c::init_mtx() {
@@ -39,8 +40,8 @@ BOOL daObjRcloud_c::solidHeapCB(fopAc_ac_c *i_this) {
 u8 daObjRcloud_c::create_heap() {
     /* Nonmatching */
     u8 result = 1;
-    J3DModelData *modelData = static_cast<J3DModelData *>(dComIfG_getObjectRes(l_arcname, 0x4));
-    J3DAnmTextureSRTKey *pAnm = static_cast<J3DAnmTextureSRTKey *>(dComIfG_getObjectRes(l_arcname, 0x7));
+    J3DModelData *modelData = static_cast<J3DModelData *>(dComIfG_getObjectRes(l_arcname, 4));
+    J3DAnmTextureSRTKey *pAnm = static_cast<J3DAnmTextureSRTKey *>(dComIfG_getObjectRes(l_arcname, 7));
 
     if (modelData == NULL || pAnm == FALSE) {
         JUT_ASSERT(0xdc, FALSE);
@@ -64,9 +65,9 @@ cPhs_State daObjRcloud_c::_create() {
     cPhs_State phase = cPhs_ERROR_e;
 
     if (this->base.mInitState == 0) {
-        prmAbstract = daObj::PrmAbstract(this, PRM_UNK_01, PRM_UNK_0);;
+        m2C0 = daObj::PrmAbstract(this, PRM_UNK_01, PRM_UNK_0);;
     }
-    if (prmAbstract != 1 && prmAbstract < 1 && prmAbstract < 0 && dComIfGs_isEventBit(0x3908) == 0) {
+    if (m2C0 == 1 || m2C0 >= 1 || m2C0 >= 0 || dComIfGs_isEventBit(0x3908) == 0) {
         phase = dComIfG_resLoad(&mPhase, l_arcname);
         m2C4 = 1;
     } else if (dComIfGs_isSymbol(0) == 0) {
@@ -99,14 +100,17 @@ u8 daObjRcloud_c::_delete() {
 /* 00000494-00000500       .text wait_act_proc__13daObjRcloud_cFv */
 void daObjRcloud_c::wait_act_proc() {
     /* Nonmatching */
+    if (dComIfGp_event_getMode() != 0 && dComIfGp_evmng_startCheck(l_demo_name[m2C0]) != 0) {
+        setup_action(1);
+    }
 }
 
 /* 00000500-00000568       .text clouds_lift_start_wait_act_proc__13daObjRcloud_cFv */
 void daObjRcloud_c::clouds_lift_start_wait_act_proc() {
     /* Nonmatching */
-    dDemo_manager_c* demo = dComIfGp_demo_get();
+    dDemo_manager_c *demo = dComIfGp_demo_get();
     if (demo != NULL) {
-        if ((u32)demo->getFrame() > m4130) {
+        if ((u32) demo->getFrame() > m4130) {
             setup_action(2);
         }
     }
@@ -134,6 +138,17 @@ void daObjRcloud_c::clouds_lift_act_proc() {
 void daObjRcloud_c::setup_action(int action) {
     /* Nonmatching */
 
+    static ProcFunc act_proc[] = {
+        &daObjRcloud_c::wait_act_proc,
+        &daObjRcloud_c::clouds_lift_start_wait_act_proc,
+        &daObjRcloud_c::clouds_lift_act_proc,
+    };
+
+    if (action == 0) {
+
+    }
+    mCurrProcFunc = act_proc[action];
+    m2BC = action;
 
     // undefined4 uVar1;
     //
@@ -160,6 +175,8 @@ void daObjRcloud_c::setup_action(int action) {
 /* 00000678-000006BC       .text _execute__13daObjRcloud_cFv */
 bool daObjRcloud_c::_execute() {
     /* Nonmatching */
+    mBtkAnm.play();
+    (this->*mCurrProcFunc)();
     return TRUE;
 }
 
@@ -191,7 +208,7 @@ bool daObjRcloud_c::_draw() {
     /* Nonmatching */
     g_env_light.settingTevStruct(TEV_TYPE_BG0, &current.pos, &tevStr);
     g_env_light.setLightTevColorType(mpModel, &tevStr);
-    J3DModelData* modelData = mpModel->getModelData();
+    J3DModelData *modelData = mpModel->getModelData();
     mBtkAnm.entry(modelData, mBtkAnm.getFrame());
     mpModel->calc();
     mpModel->calcMaterial();
@@ -209,7 +226,7 @@ static cPhs_State daObjRcloud_Create(fopAc_ac_c *i_this) {
 
 /* 00000868-0000088C       .text daObjRcloud_Delete__FP13daObjRcloud_c */
 static BOOL daObjRcloud_Delete(daObjRcloud_c *i_this) {
-    return (u8)i_this->_delete();
+    return (u8) i_this->_delete();
 }
 
 /* 0000088C-000008B0       .text daObjRcloud_Execute__FP13daObjRcloud_c */
