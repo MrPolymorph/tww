@@ -33,14 +33,42 @@ namespace daObjMagmarock {
         void quake_proc();
         void vanish_proc_init();
         void vanish_proc();
-        void CreateHeap();
+        BOOL CreateHeap();
         void CreateInit();
         void LiftUpRequest(cXyz&);
         void BeforeLiftRequest(cXyz&);
         void calc_ground_quat();
-    
+        const static char M_arcname[];
     public:
         /* Place member variables here */
+        J3DModel* field_0x2F4;
+        mDoExt_brkAnm* M_brk;
+        mDoExt_bckAnm* M_bck;
+        J3DAnmTevRegKey field_0x2F8;
+        J3DAnmTransform field_0x314;
+        Mtx field_0x328;
+        cXyz field_0x214;
+        int field_0x430;
+        int field_0x4298;
+        int field_0x429A;
+        int field_0x450;
+        int field_0x448;
+        int field_0x44C;
+        int field_0x438;
+        int field_0x454;
+        int field_0x456;
+        int field_0x458;
+        int field_0x29E;
+        Quaternion field_0x2B0;
+        Quaternion field_0x2C0;
+        Quaternion field_0x2D0;
+        u8 field_0x29F;
+        JPABaseEmitter* field_0x2A0;
+        JPABaseEmitter* field_0x2A4;
+        dBgW* field_0x358;
+        dKy_tevstr_c field_0x35C;
+        //dBgW* field_0x32C;
+        void* ptr;
     };
     
     namespace Method {
