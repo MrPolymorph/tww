@@ -55,6 +55,11 @@ void daObjMagmarock::Act_c::demo_move() {
 /* 00000258-00000410       .text ControlEffect__Q214daObjMagmarock5Act_cFv */
 void daObjMagmarock::Act_c::ControlEffect() {
     /* Nonmatching */
+    if (field_0x45C == 0) {
+        JP
+        if (field_0x2AC != NULL) {
+        }
+    }
 }
 
 /* 0000044C-00000560       .text play_anim__Q214daObjMagmarock5Act_cFv */
@@ -321,17 +326,51 @@ void daObjMagmarock::Act_c::CreateInit() {
 }
 
 /* 000013B4-00001560       .text LiftUpRequest__Q214daObjMagmarock5Act_cFR4cXyz */
-void daObjMagmarock::Act_c::LiftUpRequest(cXyz &) {
+bool daObjMagmarock::Act_c::LiftUpRequest(cXyz& i_cXyz) {
     /* Nonmatching */
+    cXyz local24;
+    bool returnValue = false;
+    ProcFunc local30;
+    field_0x43C.x = i_cXyz.x;
+    field_0x43C.y = i_cXyz.y;
+    field_0x43C.z = i_cXyz.z;
+
+    local30 = wait_proc;
+    BOOL isWaitProc = (field_0x2E0 == local30);
+    if (isWaitProc == 0) {
+        ProcFunc local3C = appear_proc;
+        BOOL isAppearProc = field_0x2E0 == local3C;
+        if (isAppearProc != 0) {
+            local24.set(current.pos - field_0x43C);
+            local24.y = 0;
+            if (!local24.normalizeRS()) {
+                local24.x = 0.0f;
+                local24.y = 0.0f;
+                local24.z = 1.0f;
+            }
+            PSVECScale(&local24, &local24, 10.0f);
+            PSVECAdd(&current.pos, &local24, &current.pos);
+        }
+        returnValue = false;
+    } else {
+        cLib_addCalcPos2(&current.pos, i_cXyz, 0.05, 5.0);
+        cLib_addCalc2(&field_0x430, 750.0, 0.5, 40.0);
+        cLib_addCalcAngleS2(&field_0x456, 0x1200, 4, 0x100);
+        field_0x454 += field_0x456;
+        cLib_addCalc2(&current.pos.y, i_cXyz.y, 0.25, 150.0);
+        field_0x45C = 1;
+        returnValue = true;
+    }
+
+    return returnValue;
 }
 
 /* 00001560-0000167C       .text BeforeLiftRequest__Q214daObjMagmarock5Act_cFR4cXyz */
 BOOL daObjMagmarock::Act_c::BeforeLiftRequest(cXyz& param_1) {
     /* Nonmatching */
     field_0x43C.set(param_1);
-    f32 fvar1 =  25.0f + home.pos.y;
-    if (home.pos.y < fvar1) {
-        field_0x43C.y = fvar1;
+    if (field_0x43C.y < (home.pos.y + 25.0f)) {
+        field_0x43C.y = home.pos.y + 25.0f;
     }
     ProcFunc proc = wait_proc;
     s32 procEquals = proc == field_0x2E0 ? 1 : 0;
@@ -352,6 +391,44 @@ BOOL daObjMagmarock::Act_c::BeforeLiftRequest(cXyz& param_1) {
 /* 0000167C-000017DC       .text calc_ground_quat__Q214daObjMagmarock5Act_cFv */
 void daObjMagmarock::Act_c::calc_ground_quat() {
     /* Nonmatching */
+    f32 yPos;
+    dMagma_packet_c *magmaPacket = dComIfGp_getMagma();
+    if (magmaPacket != NULL) {
+        yPos = magmaPacket->checkYpos(current.pos);
+    } else {
+        yPos = current.pos.y - 10.0f;
+    }
+
+    if (yPos > -99999992.0f) {
+        home.pos.y = (yPos + 10.0f) + 15.0f;
+    }
+
+    home.pos.x = current.pos.x;
+    home.pos.z = current.pos.z;
+    field_0x40C[0].x = 0;
+    field_0x40C[0].y = 0;
+    field_0x40C[0].z = 120.0f;
+    field_0x40C[1].x = 103.9;
+    field_0x40C[1].y = 0;
+    field_0x40C[1].z = -60.0f;
+    field_0x40C[2].x = -103.9f;
+    field_0x40C[2].y = 0;
+    field_0x40C[2].z = -60.0f;
+
+    for (int i = 0; i < 3; i++) {
+        field_0x40C[i] += home.pos;
+        magmaPacket = dComIfGp_getMagma();
+        if (magmaPacket != NULL) {
+            yPos = magmaPacket->checkYpos(field_0x40C[i]);
+        } else {
+            yPos = current.pos.y - 10.0f;
+        }
+
+        if (yPos > -99999992.0f) {
+            field_0x40C[i].y = yPos + 15.0f;
+        }
+    }
+    dLib_calc_QuatFromTriangle(&field_0x2D0, 0.25f, &field_0x40C[0], &field_0x40C[1], &field_0x40C[2]);
 }
 
 cPhs_State daObjMagmarock::Act_c::_create() {

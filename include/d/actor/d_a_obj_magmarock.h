@@ -37,7 +37,7 @@ namespace daObjMagmarock {
         void vanish_proc();
         BOOL CreateHeap();
         void CreateInit();
-        void LiftUpRequest(cXyz&);
+        bool LiftUpRequest(cXyz&);
         BOOL BeforeLiftRequest(cXyz&);
         void calc_ground_quat();
         const static char M_arcname[];
@@ -45,6 +45,7 @@ namespace daObjMagmarock {
     public:
         /* Place member variables here */
         u8 field_0x294[0xB];
+        JPABaseEmitter* field_0x2AC;
         s16 field_0x298;
         int field_0x29A;
         s16 field_0x29C;
@@ -77,6 +78,7 @@ namespace daObjMagmarock {
         s16 field_0x45A;
         s16 field_0x45C;
         s16 field_0x45E;
+        cXyz field_0x40C[3];
     };
     
     namespace Method {
