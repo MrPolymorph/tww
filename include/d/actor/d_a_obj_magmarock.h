@@ -46,6 +46,7 @@ namespace daObjMagmarock {
         /* Place member variables here */
         u8 field_0x294[0xB];
         JPABaseEmitter* field_0x2AC;
+        JPABaseEmitter* field_0x2A8;
         s16 field_0x298;
         int field_0x29A;
         s16 field_0x29C;
@@ -66,6 +67,9 @@ namespace daObjMagmarock {
         Mtx field_0x328;
         dBgW* field_0x358;
         dKy_tevstr_c field_0x35C;
+        int field_0x3DC;
+        int field_0x3DE;
+        int field_0x3E0;
         f32 field_0x430;
         f32 field_0x434;
         f32 field_0x438;
