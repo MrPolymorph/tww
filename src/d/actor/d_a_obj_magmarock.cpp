@@ -11,8 +11,10 @@
 #include "d/d_procname.h"
 #include "d/d_priority.h"
 #include "d/d_s_play.h"
+#include "weak_data.h" // IWYU pragma: keep
 
 const char daObjMagmarock::Act_c::M_arcname[6] = "Kyjim";
+GXColor daObjMagmarock::Act_c::default_color = {0xFF, 0xFF, 0xFF, 0xFF};
 
 /* 00000078-00000128       .text set_mtx__Q214daObjMagmarock5Act_cFv */
 void daObjMagmarock::Act_c::set_mtx() {
@@ -63,23 +65,20 @@ void daObjMagmarock::Act_c::ControlEffect() {
             field_0x2A8->setGlobalTranslation(current.pos);
         }
     } else if (field_0x45E == 0) {
-        if (field_0x2A8 !=NULL) {
+        if (field_0x2A8 != NULL) {
             field_0x2A8->becomeInvalidEmitter();
             field_0x2A8 = NULL;
         }
         if (field_0x2AC == NULL) {
-
             local_18.x = 0.0f;
             local_18.y = 1.0f;
             local_18.z = 0.0f;
-            dComIfGp_getVibration().StartShock(4,1, local_18);
+            dComIfGp_getVibration().StartShock(4, 1, local_18);
             field_0x2AC = dComIfGp_particle_set(0x8105, &current.pos, NULL, NULL, 0xFF, NULL, -1, NULL, NULL);
-        }
-        else {
+        } else {
             field_0x2AC->setGlobalTranslation(current.pos);
         }
-    }
-    else if (field_0x2AC != NULL) {
+    } else if (field_0x2AC != NULL) {
         field_0x2AC->becomeInvalidEmitter();
         field_0x2AC = NULL;
     }
@@ -89,16 +88,15 @@ void daObjMagmarock::Act_c::ControlEffect() {
 void daObjMagmarock::Act_c::play_anim() {
     /* Nonmatching */
     int iVar1 = field_0x44C;
-    if (iVar1 > 0x178) {
+    if (iVar1 < 0x178) {
         if (field_0x438 > 0.0f) {
-            if (iVar1 < 0xF || iVar1 > 0x3C && field_0x438 < (f32) field_0x2F8->getFrameMax()) {
+            field_0x438 -= 1.0f;
+            if (iVar1 < 0xF || iVar1 > 0x3C && field_0x438 < (f32) M_brk->getFrameMax()) {
                 return;
-            } else {
-                field_0x438 += 1.0f;
             }
         }
     }
-    if (field_0x44C < 0x3C && field_0x434 < field_0x314->getFrameMax()) {
+    if (field_0x44C < 0x3C && field_0x434 < M_bck->getFrameMax()) {
         field_0x434 += 1.0f;
         return;
     }
@@ -149,7 +147,7 @@ void daObjMagmarock::Act_c::stay_proc_init() {
     }
     field_0x438 = 30.0f;
     field_0x434 = 30.0f;
-    field_0x448 = (u8)uVar2 * 0xF + 0x1E;
+    field_0x448 = (u8) uVar2 * 0xF + 0x1E;
     field_0x44C = 0x14A;
     dComIfG_Bgsp()->Regist(field_0x358, this);
     field_0x2E0 = stay_proc;
@@ -158,8 +156,13 @@ void daObjMagmarock::Act_c::stay_proc_init() {
 /* 000006E0-00000720       .text stay_proc__Q214daObjMagmarock5Act_cFv */
 void daObjMagmarock::Act_c::stay_proc() {
     /* Nonmatching */
-    if (this->field_0x29E != 0 && (this->field_0x448 += -1) == 0) {
-        quake_proc_init();
+
+    if (field_0x29E != 0) {
+        int f448 = field_0x448;
+        field_0x448 = f448 + -1;
+        if (f448 == 0) {
+            quake_proc_init();
+        }
     }
 }
 
@@ -204,9 +207,9 @@ void daObjMagmarock::Act_c::vanish_proc() {
 }
 
 /* 000008F8-00000AEC       .text ride_call_back__14daObjMagmarockFP4dBgWP10fopAc_ac_cP10fopAc_ac_c */
-void daObjMagmarock::ride_call_back(dBgW* param_1, fopAc_ac_c* param_2, fopAc_ac_c* param_3) {
+void daObjMagmarock::ride_call_back(dBgW *param_1, fopAc_ac_c *param_2, fopAc_ac_c *param_3) {
     /* Nonmatching */
-    daObjMagmarock::Act_c* a_this = (daObjMagmarock::Act_c*)param_1;
+    daObjMagmarock::Act_c *a_this = (daObjMagmarock::Act_c *) param_1;
     cXyz local30;
     cXyz local3C;
     cXyz local48 = param_3->current.pos - param_2->current.pos;
@@ -222,11 +225,11 @@ void daObjMagmarock::ride_call_back(dBgW* param_1, fopAc_ac_c* param_2, fopAc_ac
         fVar2 = 0.5 * fVar2 * (3.0 - fVar4 * fVar2 * fVar2);
         fVar2 = 0.5 * fVar2 * (3.0 - fVar4 * fVar2 * fVar2);
         fVar4 = fVar2 * fVar4 * 0.5 * (3.0 - fVar4 * fVar2 * fVar2);
-    }else {
+    } else {
         return;
     }
     if (local30.normalizeRS()) {
-        s16 iVar1 = (s16)(-fVar4 * ((param_2->current.pos.y - param_2->home.pos.y) * 0.001 * 4.0 + 2.0));
+        s16 iVar1 = (s16) (-fVar4 * ((param_2->current.pos.y - param_2->home.pos.y) * 0.001 * 4.0 + 2.0));
         cLib_addCalcAngleS2(&a_this->field_0x298, iVar1, 8, 0x200);
         a_this->field_0x29C = 1;
         a_this->field_0x29E = 1;
@@ -236,7 +239,6 @@ void daObjMagmarock::ride_call_back(dBgW* param_1, fopAc_ac_c* param_2, fopAc_ac
         a_this->field_0x2C0.z = local30.z * fVar4;
         a_this->field_0x2C0.w = JMASCos(a_this->field_0x298);
     }
-
 }
 
 /* 00000AEC-00000B0C       .text CheckCreateHeap__14daObjMagmarockFP10fopAc_ac_c */
@@ -248,16 +250,16 @@ BOOL daObjMagmarock::CheckCreateHeap(fopAc_ac_c *i_this) {
 /* 00000B0C-00000DA0       .text CreateHeap__Q214daObjMagmarock5Act_cFv */
 BOOL daObjMagmarock::Act_c::CreateHeap() {
     /* Nonmatching */
-    BOOL ret = FALSE;
-    J3DModelData *modelData = (J3DModelData *) dComIfG_getObjectRes(M_arcname, 9);
+    bool ret = false;
+    J3DModelData *modelData = static_cast<J3DModelData*>(dComIfG_getObjectRes(M_arcname, 9));
     JUT_ASSERT(0x14D, modelData != 0);
     field_0x2F4 = mDoExt_J3DModel__create(modelData, 0, 0x11020203);
-    M_brk = (mDoExt_brkAnm *) dComIfG_getObjectRes(M_arcname, 0xC);
-    M_bck = (mDoExt_bckAnm *) dComIfG_getObjectRes(M_arcname, 6);
+    M_brk = (J3DAnmTevRegKey *) dComIfG_getObjectRes(M_arcname, 0xC);
+    M_bck = (J3DAnmTransform *) dComIfG_getObjectRes(M_arcname, 6);
     JUT_ASSERT(0x155, M_brk != NULL);
     JUT_ASSERT(0x156, M_bck != NULL);
-    int brkInitVal = M_brk->init(modelData, field_0x2F8, FALSE, J3DFrameCtrl::EMode_LOOP, 1.0f, 0, -1, false, 0);
-    int bckInittVal = M_bck->init(modelData, field_0x314, FALSE, J3DFrameCtrl::EMode_LOOP, 1.0f, 0, -1, false);
+    int brkInitVal = field_0x2FC.init(modelData, M_brk, FALSE, J3DFrameCtrl::EMode_LOOP, 1.0f, 0, -1, false, 0);
+    int bckInittVal = field_0x318.init(modelData, M_bck, FALSE, J3DFrameCtrl::EMode_LOOP, 1.0f, 0, -1, false);
     PSMTXTrans(mDoMtx_stack_c::get(), current.pos.x, current.pos.y, current.pos.z);
     mDoMtx_stack_c::YrotM(shape_angle.y);
     mDoMtx_stack_c::scaleM(scale.x, scale.y, scale.z);
@@ -277,7 +279,7 @@ BOOL daObjMagmarock::Act_c::CreateHeap() {
     return ret;
 }
 
-GXColor default_color = {0, 0, 0, 0};
+
 /* 00000DA0-000013B4       .text CreateInit__Q214daObjMagmarock5Act_cFv */
 void daObjMagmarock::Act_c::CreateInit() {
     /* Nonmatching */
@@ -349,7 +351,7 @@ void daObjMagmarock::Act_c::CreateInit() {
 }
 
 /* 000013B4-00001560       .text LiftUpRequest__Q214daObjMagmarock5Act_cFR4cXyz */
-bool daObjMagmarock::Act_c::LiftUpRequest(cXyz& i_cXyz) {
+bool daObjMagmarock::Act_c::LiftUpRequest(cXyz &i_cXyz) {
     /* Nonmatching */
     cXyz local24;
     bool returnValue = false;
@@ -380,7 +382,7 @@ bool daObjMagmarock::Act_c::LiftUpRequest(cXyz& i_cXyz) {
         cLib_addCalc2(&field_0x430, 750.0, 0.5, 40.0);
         cLib_addCalcAngleS2(&field_0x456, 0x1200, 4, 0x100);
         field_0x454 += field_0x456;
-        cLib_addCalc2(&current.pos.y, i_cXyz.y, 0.25, 150.0);
+        cLib_addCalc2(&current.pos.y, i_cXyz.y, 0.25, 1000.0);
         field_0x45C = 1;
         returnValue = true;
     }
@@ -389,7 +391,7 @@ bool daObjMagmarock::Act_c::LiftUpRequest(cXyz& i_cXyz) {
 }
 
 /* 00001560-0000167C       .text BeforeLiftRequest__Q214daObjMagmarock5Act_cFR4cXyz */
-BOOL daObjMagmarock::Act_c::BeforeLiftRequest(cXyz& param_1) {
+BOOL daObjMagmarock::Act_c::BeforeLiftRequest(cXyz &param_1) {
     /* Nonmatching */
     field_0x43C.set(param_1);
     if (field_0x43C.y < (home.pos.y + 25.0f)) {
@@ -458,12 +460,13 @@ cPhs_State daObjMagmarock::Act_c::_create() {
     fopAcM_SetupActor(this, Act_c);
     cPhs_State state = dComIfG_resLoad(&field_0x2EC, M_arcname);
     if (state == cPhs_COMPLEATE_e) {
-        if (dComIfGp_getMagma() != NULL) {
-            state = cPhs_ERROR_e;
+        if (dComIfGp_getMagma() == NULL) {
+            state = cPhs_INIT_e;
         } else {
-            if (fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x5D40)) {
-                CreateInit();
+            if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x5D40)) {
+                return cPhs_ERROR_e;
             }
+            CreateInit();
         }
     }
     return state;
@@ -520,8 +523,8 @@ bool daObjMagmarock::Act_c::_execute() {
             }
         }
         current.pos.y += speed.y;
-        speed.y =  speed.y + gravity;
-    }else {
+        speed.y = speed.y + gravity;
+    } else {
         speed.y = 0.0f;
     }
     f32 fvar2 = home.pos.y + 100.0f;
@@ -539,9 +542,9 @@ bool daObjMagmarock::Act_c::_execute() {
             if (fvar2 < fvar3) {
                 current.pos.y = fvar3;
             }
-            speed.y -= REG10_F(26) + 0.4f + current.pos.y - home.pos.y;
+            speed.y = speed.y - (REG10_F(26) + 0.4f) * (current.pos.y - home.pos.y);
         }
-        speed.y *= 0.64 - REG10_F(25);
+        speed.y = speed.y * (0.64 - REG10_F(25));
     }
     if (field_0x45C == 0) {
         proc = stay_proc;
@@ -558,8 +561,8 @@ bool daObjMagmarock::Act_c::_execute() {
     field_0x45E = 0;
     (this->*field_0x2E0)();
     play_anim();
-    shape_angle.x = JMASCos(field_0x454);
-    shape_angle.z = JMASSin(field_0x454);
+    shape_angle.x = field_0x430 * JMASCos(field_0x454);
+    shape_angle.z = field_0x430 * JMASSin(field_0x454);
     if (field_0x29C == 0) {
         field_0x2C0 = ZeroQuat;
     }
@@ -572,7 +575,7 @@ bool daObjMagmarock::Act_c::_execute() {
     field_0x29C = 0;
     if (field_0x358->GetId() < 0 || field_0x358->GetId() > 0xFF) {
         ret = false;
-    }else {
+    } else {
         ret = true;
     }
     if (ret) {
@@ -584,27 +587,25 @@ bool daObjMagmarock::Act_c::_execute() {
 }
 
 bool daObjMagmarock::Act_c::_draw() {
-
     g_env_light.settingTevStruct(TEV_TYPE_BG0, &current.pos, &tevStr);
     g_env_light.settingTevStruct(TEV_TYPE_ACTOR, &current.pos, &field_0x35C);
-    field_0x35C.mColorC0.r += (s16)(field_0x35C.mColorC0.r  * 0.12f);
-    field_0x35C.mColorC0.g += (s16)(field_0x35C.mColorC0.g  * 0.12f);
-    field_0x35C.mColorC0.b += (s16)(field_0x35C.mColorC0.b  * 0.12f);
+    field_0x35C.mColorC0.r += (s16) (field_0x35C.mColorC0.r * 0.12f);
+    field_0x35C.mColorC0.g += (s16) (field_0x35C.mColorC0.g * 0.12f);
+    field_0x35C.mColorC0.b += (s16) (field_0x35C.mColorC0.b * 0.12f);
     field_0x35C.mColorK0.r += field_0x35C.mColorK0.r * 0.12f;
     field_0x35C.mColorK0.g += field_0x35C.mColorK0.g * 0.12f;
     field_0x35C.mColorK0.b += field_0x35C.mColorK0.b * 0.12f;
     g_env_light.setLightTevColorType(field_0x2F4, &tevStr);
-    M_brk->entry(field_0x2F4->getModelData(), field_0x434);
-    M_bck->entry(field_0x2F4->getModelData(), field_0x434);
+    field_0x2FC.entry(field_0x2F4->getModelData(), field_0x434);
+    field_0x318.entry(field_0x2F4->getModelData(), field_0x434);
     mDoExt_modelUpdateDL(field_0x2F4);
-
 }
 
 
 /* 00001EC0-00002128       .text Draw__Q214daObjMagmarock6MethodFPv */
-BOOL daObjMagmarock::Method::Draw(void* i_this) {
+BOOL daObjMagmarock::Method::Draw(void *i_this) {
     /* Nonmatching */
-    daObjMagmarock::Act_c* a_this = (daObjMagmarock::Act_c*)i_this;
+    daObjMagmarock::Act_c *a_this = (daObjMagmarock::Act_c *) i_this;
     a_this->_draw();
     return TRUE;
 }
